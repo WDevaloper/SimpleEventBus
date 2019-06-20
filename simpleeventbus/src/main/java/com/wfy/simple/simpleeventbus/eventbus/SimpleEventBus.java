@@ -117,8 +117,7 @@ public class SimpleEventBus {
     }
 
     private void invoke(SubscriberMethod subscriberMethod, Object obj, final Object eventObj) {
-        EventTask eventTask =
-                new EventTask(subscriberMethod.getMethod(), obj, eventObj, subscriberMethod.getThreadMode());
+        EventTask eventTask = new EventTask(subscriberMethod.getMethod(), obj, eventObj, subscriberMethod.getThreadMode());
         ScheduleHelper.execute(eventTask);
     }
 }
