@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:paddingRight="80dp"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/load"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:padding="15dp"
+        android:text="load323232"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/load1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#aa000000"
+        android:padding="15dp"
+        android:text="load"
+        app:layout_constraintLeft_toLeftOf="@id/load"
+        app:layout_constraintTop_toBottomOf="@id/load" />
+
+    <TextView
+        android:id="@+id/load2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#ff0000"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="load"
+        app:layout_constraintCircle="@id/load"
+        app:layout_constraintCircleAngle="120"
+        app:layout_constraintCircleRadius="120dp"
+        app:layout_constraintLeft_toRightOf="@id/load"
+        app:layout_constraintTop_toTopOf="@id/load" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#00000000"
+        android:clipChildren="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:src="@mipmap/ic_launcher" />
+
+    </LinearLayout>
+
+</LinearLayout>
