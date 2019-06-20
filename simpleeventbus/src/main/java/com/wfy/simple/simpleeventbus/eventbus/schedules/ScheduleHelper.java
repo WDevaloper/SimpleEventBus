@@ -12,6 +12,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * 线程切换
+ */
 public class ScheduleHelper {
 
     private static Handler mainHandler = new Handler(Looper.getMainLooper());

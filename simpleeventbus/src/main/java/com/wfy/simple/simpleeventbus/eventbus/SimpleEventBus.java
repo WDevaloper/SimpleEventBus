@@ -9,10 +9,10 @@ import com.wfy.simple.simpleeventbus.eventbus.schedules.ScheduleHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SimpleEventBus {
 
@@ -42,16 +42,18 @@ public class SimpleEventBus {
         return mIntance;
     }
 
-    public synchronized void register(Object object) {
+    public void register(Object object) {
         List<SubscriberMethod> subscribes = mCacheMap.get(object);
         if (subscribes == null) {
-            subscribes = findSubscribeMethod(object);
-            mCacheMap.put(object, subscribes);
+            synchronized (SimpleEventBus.class) {
+                subscribes = findSubscribeMethod(object);
+                mCacheMap.put(object, subscribes);
+            }
         }
     }
 
 
-    public synchronized void unRegister(Object object) {
+    public void unRegister(Object object) {
         List<SubscriberMethod> subscribes = mCacheMap.get(object);
         if (subscribes != null) {
             subscribes.clear();
@@ -60,7 +62,7 @@ public class SimpleEventBus {
     }
 
     private List<SubscriberMethod> findSubscribeMethod(Object object) {
-        ArrayList<SubscriberMethod> subscriberMethods = new ArrayList<>();
+        List<SubscriberMethod> subscriberMethods = new CopyOnWriteArrayList<>();
         Class<?> clazz = object.getClass();
 
         while (clazz != null) {
@@ -93,7 +95,7 @@ public class SimpleEventBus {
     }
 
     /**
-     * 实际上是对比方法的参数
+     * 实际上是根据订阅方法的参数和发布传进来的对象进行对比
      *
      * @param eventMessage
      */
