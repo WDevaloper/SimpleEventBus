@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.wfy.simple.simpleeventbus.eventbus.ThreadMode;
 
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -88,7 +89,7 @@ public class ScheduleRouterExecutor extends ThreadPoolExecutor {
 
 
     /**
-     * 线程执行结束，顺便看一下有么有什么乱七八糟的异常
+     * 线程执行结束，检查是否存在的异常
      *
      * @param r the runnable that has completed
      * @param t the exception that caused termination, or null if
@@ -112,7 +113,7 @@ public class ScheduleRouterExecutor extends ThreadPoolExecutor {
         if (t != null) {
             Log.e("tag", "Running task appeared exception! Thread [" +
                     Thread.currentThread().getName() + "], because [" + t.getMessage() + "]\n" +
-                    formatStackTrace(t.getStackTrace()));
+                    Arrays.toString(t.getStackTrace()));
         }
     }
 

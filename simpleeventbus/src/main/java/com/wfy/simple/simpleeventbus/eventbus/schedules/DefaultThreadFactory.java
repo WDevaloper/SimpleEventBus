@@ -22,7 +22,7 @@ public class DefaultThreadFactory implements ThreadFactory {
         SecurityManager securityManager = System.getSecurityManager();
         threadGroup = (securityManager != null) ? securityManager.getThreadGroup() :
                 Thread.currentThread().getThreadGroup();
-        namePrefix = "Simple Router task pool No." + poolNumber.getAndIncrement() + ", thread No.";
+        namePrefix = "Simple EventBus task pool No." + poolNumber.getAndIncrement() + ", thread No.";
     }
 
     @Override
