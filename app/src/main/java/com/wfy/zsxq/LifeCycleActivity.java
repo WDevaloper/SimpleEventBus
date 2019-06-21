@@ -45,9 +45,18 @@ public class LifeCycleActivity extends Activity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                SimpleEventBus.getDefault().post(new EventMessage("Event"));
+                for (int i = 0; i < 100; i++) {
+                    int index = i;
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            SimpleEventBus.getDefault().post(new EventMessage("Event" + index));
+//                            SystemClock.sleep(1000);
+                        }
+                    }.start();
+                }
             }
-        }, 5000);
+        }, 1000);
 
     }
 
@@ -78,7 +87,6 @@ public class LifeCycleActivity extends Activity {
         super.onStop();
         Log.e(S_TAG, "onStop");
     }
-
 
     @Override
     protected void onDestroy() {

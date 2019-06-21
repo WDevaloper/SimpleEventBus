@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.wfy.simple.simpleeventbus.eventbus.annotations.Subscribe;
 import com.wfy.simple.simpleeventbus.eventbus.schedules.EventTask;
-import com.wfy.simple.simpleeventbus.eventbus.schedules.ScheduleHelper;
+import com.wfy.simple.simpleeventbus.eventbus.schedules.ScheduleRouterExecutor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -118,6 +118,6 @@ public class SimpleEventBus {
 
     private void invoke(SubscriberMethod subscriberMethod, Object obj, final Object eventObj) {
         EventTask eventTask = new EventTask(subscriberMethod.getMethod(), obj, eventObj, subscriberMethod.getThreadMode());
-        ScheduleHelper.execute(eventTask);
+        ScheduleRouterExecutor.getInstance().executeTask(eventTask);
     }
 }

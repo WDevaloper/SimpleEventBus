@@ -13,6 +13,13 @@ import com.wfy.simple.simpleeventbus.eventbus.annotations.Subscribe;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class MainActivity extends BaseActivity implements UserView {
 
 
@@ -46,6 +53,34 @@ public class MainActivity extends BaseActivity implements UserView {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LifeCycleActivity.class);
                 startActivity(intent);
+            }
+        });
+
+
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                emitter.onNext("");
+            }
+        }).observeOn(Schedulers.io()).subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
             }
         });
 
