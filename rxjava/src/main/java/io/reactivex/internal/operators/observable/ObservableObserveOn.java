@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,6 +28,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
     final Scheduler scheduler;
     final boolean delayError;
     final int bufferSize;
+
     public ObservableObserveOn(ObservableSource<T> source, Scheduler scheduler, boolean delayError, int bufferSize) {
         super(source);
         this.scheduler = scheduler;
@@ -35,6 +36,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         this.bufferSize = bufferSize;
     }
 
+    // Observable#observeOn(Scheduler) 并不会对上游线程执行环境有任何影响。
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         if (scheduler instanceof TrampolineScheduler) {
@@ -46,7 +48,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
     }
 
     static final class ObserveOnObserver<T> extends BasicIntQueueDisposable<T>
-    implements Observer<T>, Runnable {
+            implements Observer<T>, Runnable {
 
         private static final long serialVersionUID = 6576896619930983584L;
         final Observer<? super T> downstream;
@@ -112,9 +114,11 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 return;
             }
 
+            //加入队列
             if (sourceMode != QueueDisposable.ASYNC) {
                 queue.offer(t);
             }
+            //开始调度任务
             schedule();
         }
 
@@ -167,12 +171,12 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             final SimpleQueue<T> q = queue;
             final Observer<? super T> a = downstream;
 
-            for (;;) {
+            for (; ; ) {
                 if (checkTerminated(done, q.isEmpty(), a)) {
                     return;
                 }
 
-                for (;;) {
+                for (; ; ) {
                     boolean d = done;
                     T v;
 
@@ -210,7 +214,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         void drainFused() {
             int missed = 1;
 
-            for (;;) {
+            for (; ; ) {
                 if (disposed) {
                     return;
                 }
@@ -280,8 +284,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                         a.onError(e);
                         worker.dispose();
                         return true;
-                    } else
-                    if (empty) {
+                    } else if (empty) {
                         disposed = true;
                         a.onComplete();
                         worker.dispose();

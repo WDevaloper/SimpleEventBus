@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements UserView {
                 emitter.onNext("发射 subscribe");
             }
         })//ObservableCreate
-                .observeOn(Schedulers.newThread())//ObservableObserveOn
+                .observeOn(Schedulers.newThread())//ObservableObserveOn，会在线程中调用subscribe传递Obsevable给下一个
                 .map(new Function<String, String>() {//ObservableMap    MapObserver
                     @Override
                     public String apply(String s) throws Exception {
@@ -75,27 +75,34 @@ public class MainActivity extends BaseActivity implements UserView {
                         return "map";
                     }
                 })
+                //第一次有效，从下面开始，2处使用ObservableSubscribeOn包裹observer
+                //接着有调用subscribe紧接着电泳1处的 subscribeActual(observer)并把observer传上来，这样就造成只有第一次有效
+                //因为observer是从下面穿上来的而Observable是从上面传下来的，都是一层层包裹随意切线程哈
+                .subscribeOn(Schedulers.newThread())//1
+                .subscribeOn(Schedulers.io())//2
+                .observeOn(Schedulers.newThread())//ObservableObserveOn
                 .subscribe(new Observer<String>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                showLog("onSubscribe： " + Thread.currentThread().getName());
-            }
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        showLog("onSubscribe： " + Thread.currentThread().getName());
+                    }
 
-            @Override
-            public void onNext(String s) {
-                showLog("onNext");
-            }
+                    @Override
+                    public void onNext(String s) {
+                        showLog("onNext");
+                        showLog("onNext： " + Thread.currentThread().getName());
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                showLog("onError");
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        showLog("onError");
+                    }
 
-            @Override
-            public void onComplete() {
-                showLog("onComplete");
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        showLog("onComplete");
+                    }
+                });
     }
 
     private void testBug() {
