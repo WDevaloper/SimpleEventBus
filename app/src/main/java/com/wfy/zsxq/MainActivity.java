@@ -61,7 +61,44 @@ public class MainActivity extends BaseActivity implements UserView {
             }
         });
 
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                emitter.onNext("发射 subscribe");
+            }
+        })//ObservableCreate
+                .observeOn(Schedulers.newThread())//ObservableObserveOn
+                .map(new Function<String, String>() {//ObservableMap    MapObserver
+                    @Override
+                    public String apply(String s) throws Exception {
+                        Log.e("tag", "map2: " + Thread.currentThread().getName());
+                        return "map";
+                    }
+                })
+                .subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                showLog("onSubscribe： " + Thread.currentThread().getName());
+            }
 
+            @Override
+            public void onNext(String s) {
+                showLog("onNext");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                showLog("onError");
+            }
+
+            @Override
+            public void onComplete() {
+                showLog("onComplete");
+            }
+        });
+    }
+
+    private void testBug() {
         /**
          *
          * observable.subscribe(Observer) -> ObservableObserveOn.subscribeActual->observable.subscribe(Observer)->
@@ -110,7 +147,7 @@ public class MainActivity extends BaseActivity implements UserView {
             //先执行，当前线程
             @Override
             public void onSubscribe(Disposable d) {
-                showLog("onSubscribe： "+ Thread.currentThread().getName());
+                showLog("onSubscribe： " + Thread.currentThread().getName());
             }
 
             @Override
