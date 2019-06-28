@@ -21,6 +21,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements UserView {
@@ -60,18 +61,56 @@ public class MainActivity extends BaseActivity implements UserView {
             }
         });
 
+
+        /**
+         *
+         * observable.subscribe(Observer) -> ObservableObserveOn.subscribeActual->observable.subscribe(Observer)->
+         * ObservableSubscribeOn.subscribeActual -> observable.subscribe(Observer) ->ObservableCreate.subscribeActual ->
+         * ObservableOnSubscribe.subscribe(emitter)发射事件
+         *
+         *
+         * CreateEmitter包裹Observer实例
+         *
+         * 从下游调用subscribe方法，传递Observer，接着Observable.subscribeActual方法一直把observer一直传递到最上游
+         *
+         * 1、将下游传来的 Observer 根据需求进行封装；
+         * 2、上游的 Observable subscribe() 该 Observer。
+         */
+
         Observable<String> observable = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                emitter.onNext("");
+                emitter.onNext("发射 subscribe");
+            }
+        });//ObservableCreate
+
+
+        //不链式调用能够切换线程，是不是会破坏RxJava的机制了？为什么会破坏掉呢？实际上订阅需要通过
+        // bservable.subscribe方法一层层关联，而这里仅仅只是ObservableCreate订阅了，其他的并没有订阅只是创建了对象
+        observable.observeOn(Schedulers.newThread());//ObservableObserveOn
+        observable.map(new Function<String, Object>() {
+            @Override
+            public Object apply(String s) throws Exception {
+                Log.e("tag", "map1: " + Thread.currentThread().getName());
+                return "aa";
             }
         });
         observable.subscribeOn(Schedulers.io());//ObservableSubscribeOn
         observable.observeOn(Schedulers.io());//ObservableObserveOn
+        observable.map(new Function<String, Object>() {
+            @Override
+            public Object apply(String s) throws Exception {
+                Log.e("tag", "map2: " + Thread.currentThread().getName());
+                return "aa";
+            }
+        });
+
+        //call ObservableObserveOn.subscribeActual方法
         observable.subscribe(new Observer<String>() {
+            //先执行，当前线程
             @Override
             public void onSubscribe(Disposable d) {
-                showLog("onSubscribe");
+                showLog("onSubscribe： "+ Thread.currentThread().getName());
             }
 
             @Override
