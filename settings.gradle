@@ -1,1 +1,4 @@
-include ':app', ':simpleeventbus'
+include ':app'
+include ':simpleeventbus'
+include ':refreshlayout'
+include ':rxjava'

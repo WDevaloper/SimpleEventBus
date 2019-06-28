@@ -14,7 +14,6 @@ import com.wfy.simple.simpleeventbus.eventbus.SimpleEventBus;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class LifeCycleActivity extends Activity {
@@ -39,7 +38,7 @@ public class LifeCycleActivity extends Activity {
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
 
             }
-        }).observeOn(Schedulers.io()).subscribeOn(AndroidSchedulers.mainThread()).subscribe();
+        }).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe();
 
 
         new Handler().postDelayed(new Runnable() {
@@ -56,7 +55,7 @@ public class LifeCycleActivity extends Activity {
                     }.start();
                 }
             }
-        }, 1000);
+        }, 10000);
 
     }
 

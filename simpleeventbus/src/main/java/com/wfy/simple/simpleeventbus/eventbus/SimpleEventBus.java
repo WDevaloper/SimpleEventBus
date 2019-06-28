@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SimpleEventBus {
 
-    private static SimpleEventBus mIntance = null;
+    private static SimpleEventBus mInstance = null;
 
 
     //观察者可能有多个
@@ -24,7 +24,7 @@ public class SimpleEventBus {
 
 
     private SimpleEventBus() {
-        if (mIntance != null) {
+        if (mInstance != null) {
             throw new RuntimeException("MyEVentBus 只能有一个实例");
         }
     }
@@ -32,14 +32,14 @@ public class SimpleEventBus {
 
     @NonNull
     public static SimpleEventBus getDefault() {
-        if (mIntance == null) {
+        if (mInstance == null) {
             synchronized (SimpleEventBus.class) {
-                if (mIntance == null) {
-                    mIntance = new SimpleEventBus();
+                if (mInstance == null) {
+                    mInstance = new SimpleEventBus();
                 }
             }
         }
-        return mIntance;
+        return mInstance;
     }
 
     public void register(Object object) {

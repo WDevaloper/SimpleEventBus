@@ -1,5 +1,6 @@
 package com.wfy.zsxq;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements UserView {
@@ -40,6 +43,7 @@ public class MainActivity extends BaseActivity implements UserView {
         SimpleEventBus.getDefault().register(this);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mPresenter = new UserPresenter<>();
@@ -56,117 +60,43 @@ public class MainActivity extends BaseActivity implements UserView {
             }
         });
 
-
-        Observable.create(new ObservableOnSubscribe<String>() {
+        Observable<String> observable = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
                 emitter.onNext("");
             }
-        }).observeOn(Schedulers.io()).subscribe(new Observer<String>() {
+        });
+        observable.subscribeOn(Schedulers.io());//ObservableSubscribeOn
+        observable.observeOn(Schedulers.io());//ObservableObserveOn
+        observable.subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
-
+                showLog("onSubscribe");
             }
 
             @Override
             public void onNext(String s) {
-
+                showLog("onNext");
             }
 
             @Override
             public void onError(Throwable e) {
-
+                showLog("onError");
             }
 
             @Override
             public void onComplete() {
-
+                showLog("onComplete");
             }
         });
+    }
 
 
-//        ViewGroup view = (ViewGroup) findViewById(R.id.root);
-//
-//
-//        HashMap<Object, Object> hashMap = new HashMap<>();
-//        hashMap.put("", "");
-//
-//
-//        AtomicStampedReference<Integer> atomicStampedReference = new AtomicStampedReference<>(100, 0);
-//        atomicStampedReference.compareAndSet(50, 1, atomicStampedReference.getStamp(), atomicStampedReference.getStamp() + 1);
-//
-//        startActivity(new Intent());
+    private void showLog(String msg) {
+        Log.e("tag", msg);
+    }
 
-//        view.post(() -> {
-//            float hypot = (float) Math.hypot(view.getHeight(), view.getWidth());
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                Animator circularReveal = ViewAnimationUtils.createCircularReveal(view, view.getWidth() / 2,
-//                        view.getHeight() / 2, 0, hypot);
-//                circularReveal.setDuration(5000);
-//                circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
-//                circularReveal.start();
-//            }
-//        });
-//
-//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.layoutanim);
-//        LayoutAnimationController controller = new LayoutAnimationController(animation);
-//        controller.setDelay(0.3f);
-//        controller.setOrder(LayoutAnimationController.ORDER_NORMAL);
-//        view.setLayoutAnimation(controller);
-//        view.setLayoutAnimationListener(new Animation.AnimationListener() {
-//            @Override
-//            public void onAnimationStart(Animation animation) {
-//                Log.e("tag", "onAnimationStart");
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation animation) {
-//                Log.e("tag", "onAnimationEnd");
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation animation) {
-//                Log.e("tag", "onAnimationRepeat");
-//            }
-//        });
-
-//        byte[] proxyClassFile = Proxy.newProxyInstance();
-//        Messenger messenger = new Messenger());
-//        messenger.send();
-
-//        findViewById(R.id.load).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                OkHttpClient httpClient = new OkHttpClient.Builder()
-//                        .build();
-//                Call newCall = httpClient.newCall(new Request.Builder().build());
-//                try {
-//                    newCall.execute().body();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                FragmentManager manager = getSupportFragmentManager();
-//                manager.beginTransaction().add(new HolderFragment(), "HolderFragment").commitAllowingStateLoss();
-//
-//                startActivityForResult(new Intent(MainActivity.this, BActivity.class), 100);
-
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        new MyAsyncTask("MyAsyncTask6").execute("");
-//                    }
-//                }.start();
-//
-//                new MyAsyncTask("MyAsyncTask1").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
-//                new MyAsyncTask("MyAsyncTask2").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//                new MyAsyncTask("MyAsyncTask3").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//                new MyAsyncTask("MyAsyncTask4").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//                new MyAsyncTask("MyAsyncTask5").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//            }
-//        });
-
-
+    private void teststr() {
         /**
          * 1、StrongReference：
          * 当强引用对象占用的内存足够多时，JVM就会抛出OutOfMemory
@@ -273,6 +203,131 @@ public class MainActivity extends BaseActivity implements UserView {
 //        Log.e("tag","11"+ String.valueOf(s3 == s4)); // false
         // 对于什么时候会在常量池存储字符串对象，我想我们可以基本得出结论: 1. 显示调用String的intern方法的时候; 2. 直接声明字符串字面常量的时候，例如: String a = "aaa";
         // 3. 字符串直接常量相加的时候，例如: String c = "aa" + "bb";  其中的aa/bb只要有任何一个不是字符串字面常量形式，都不会在常量池生成"aabb". 且此时jvm做了优化，不会同时生成"aa"和"bb"在字符串常量池中
+    }
+
+    private void test() {
+        //        ViewGroup view = (ViewGroup) findViewById(R.id.root);
+//
+//
+//        HashMap<Object, Object> hashMap = new HashMap<>();
+//        hashMap.put("", "");
+//
+//
+//        AtomicStampedReference<Integer> atomicStampedReference = new AtomicStampedReference<>(100, 0);
+//        atomicStampedReference.compareAndSet(50, 1, atomicStampedReference.getStamp(), atomicStampedReference.getStamp() + 1);
+//
+//        startActivity(new Intent());
+
+//        view.post(() -> {
+//            float hypot = (float) Math.hypot(view.getHeight(), view.getWidth());
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                Animator circularReveal = ViewAnimationUtils.createCircularReveal(view, view.getWidth() / 2,
+//                        view.getHeight() / 2, 0, hypot);
+//                circularReveal.setDuration(5000);
+//                circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
+//                circularReveal.start();
+//            }
+//        });
+//
+//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.layoutanim);
+//        LayoutAnimationController controller = new LayoutAnimationController(animation);
+//        controller.setDelay(0.3f);
+//        controller.setOrder(LayoutAnimationController.ORDER_NORMAL);
+//        view.setLayoutAnimation(controller);
+//        view.setLayoutAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//                Log.e("tag", "onAnimationStart");
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                Log.e("tag", "onAnimationEnd");
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//                Log.e("tag", "onAnimationRepeat");
+//            }
+//        });
+
+//        byte[] proxyClassFile = Proxy.newProxyInstance();
+//        Messenger messenger = new Messenger());
+//        messenger.send();
+
+//        findViewById(R.id.load).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                OkHttpClient httpClient = new OkHttpClient.Builder()
+//                        .build();
+//                Call newCall = httpClient.newCall(new Request.Builder().build());
+//                try {
+//                    newCall.execute().body();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                FragmentManager manager = getSupportFragmentManager();
+//                manager.beginTransaction().add(new HolderFragment(), "HolderFragment").commitAllowingStateLoss();
+//
+//                startActivityForResult(new Intent(MainActivity.this, BActivity.class), 100);
+
+//                new Thread() {
+//                    @Override
+//                    public void run() {
+//                        new MyAsyncTask("MyAsyncTask6").execute("");
+//                    }
+//                }.start();
+//
+//                new MyAsyncTask("MyAsyncTask1").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+//                new MyAsyncTask("MyAsyncTask2").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                new MyAsyncTask("MyAsyncTask3").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                new MyAsyncTask("MyAsyncTask4").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                new MyAsyncTask("MyAsyncTask5").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//            }
+//        });
+    }
+
+    private void testFlaMapAndConcat() {
+        //实际上concat是串行发送事件的，内部实现是通过同步队列不断for循环取出队列任务
+        Observable.concat(Observable.just(1, 2),
+                Observable.just(3, 4).observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()),
+                Observable.just(5, 6).observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()),
+                Observable.just(7, 8).observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()))
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.e("tag", "================concat： " + integer);
+                    }
+                });
+
+
+        Observable.merge(Observable.just(1, 2),
+                Observable.just(3, 4).observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()),
+                Observable.just(5, 6).observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()),
+                Observable.just(7, 8).observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io()))
+                .doOnLifecycle(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+
+                    }
+                })
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.e("tag", "================merge： " + integer);
+                    }
+                });
     }
 
 
